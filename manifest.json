@@ -1,0 +1,19 @@
+﻿{
+    "name": "Feedly will open entry in background tab",
+    "description": "Feedly will open entry in background tab, so key is 'f'.", 
+    "version": "0.1",
+    "manifest_version": 2,
+    "background" : {
+      "scripts": ["background.js"]
+    },
+    "content_scripts": [ {
+      "js": [ "contents.js" ],
+      "matches": [
+        "http://www.feedly.com/home*",
+        "https://www.feedly.com/home*"
+      ]
+    } ],
+    "permissions": [
+      "tabs"
+    ]
+}
