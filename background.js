@@ -49,14 +49,3 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage['version'] = currVersion;
     }
 });
-
-/**
-* コンテンツスクリプトからメッセージを取得し処理。
-*/
-chrome.extension.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if (request.url) {
-            chrome.tabs.create({ "url": request.url, "active": false});
-        }
-    }
-);

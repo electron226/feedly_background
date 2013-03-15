@@ -1,1 +1,1 @@
-zip package.zip *.js manifest.json
+zip package.zip *.js *.html manifest.json
