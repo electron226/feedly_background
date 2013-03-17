@@ -10,9 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
             var flag = true;
             document.addEventListener('keypress', function(ke) {
                 if (flag) {
+                    var error = document.getElementById("error");
                     var key = String.fromCharCode(ke.which).toUpperCase();
-                    mes.innerText = key;
-                    localStorage['background_key'] = key;
+                    if (/[A-Z0-9]/.test(key)) {
+                        mes.innerText = key;
+                        localStorage['background_key'] = key;
+                        error.innerText = "";
+                    } else {
+                        mes.innerText = background_key;
+                        error.innerText = "'" + key + "' is not support key.";
+                    }
                     flag = false;
                 }
             }, false);
