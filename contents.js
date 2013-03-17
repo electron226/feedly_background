@@ -18,7 +18,10 @@ if (!opentab) {
                     '//div[contains(@class, "selectedEntry")]',
                     document, null, 7, null);
                 if (entries.snapshotLength != 1) {
-                    return;
+                    // Find select entry which used mouse.
+                    entries = document.evaluate(
+                        '//table[contains(@class, "selectedEntry")]',
+                        document, null, 7, null);
                 }
                 var entry = entries.snapshotItem(0);
                 var entryId = entry.id;
@@ -26,7 +29,7 @@ if (!opentab) {
                 // Do select entry is mini preview?
                 var i = entryId.lastIndexOf("_abstract");
                 if (i != -1) {
-                    // delete '_abstract'
+                    // delete '_abstract' or '_entryHolder'
                     entryId = entryId.substr(0, i);
                 }
 
