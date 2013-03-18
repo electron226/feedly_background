@@ -12,28 +12,35 @@ if (!opentab) {
                 document, null, 7, null);
             if (previews.snapshotLength == 1) { // Found full preview
                 var url = preview.snapShotItem(0).src;
-            } else { // can't find  fullpreview
-                // Find select entry
+            } else { // can't find full preview
+                // Find select articles by using the mouse.
                 var entries = document.evaluate(
-                    '//div[contains(@class, "selectedEntry")]',
+                    '//td[contains(@class, "entryHolder")]',
                     document, null, 7, null);
                 if (entries.snapshotLength != 1) {
-                    // Find select entry which used mouse.
-                    entries = document.evaluate(
-                        '//table[contains(@class, "selectedEntry")]',
+                    // Find select articles by using the keyboard.
+                    var entries = document.evaluate(
+                        '//*[contains(@class, "selectedEntry")]',
                         document, null, 7, null);
                 }
                 var entry = entries.snapshotItem(0);
                 var entryId = entry.id;
 
-                // Do select entry is mini preview?
-                var i = entryId.lastIndexOf("_abstract");
+                // mini preview by using mouse.
+                var i = entryId.lastIndexOf("_entryHolder");
                 if (i != -1) {
-                    // delete '_abstract' or '_entryHolder'
-                    entryId = entryId.substr(0, i);
+                    // delete '_entryHolder'. add '_main'
+                    entryId = entryId.substr(0, i) + "_main";
+                } else {
+                    // mini preview by using keyboard
+                    var i = entryId.lastIndexOf("_abstract");
+                    if (i != -1) {
+                        // delete '_abstract'
+                        entryId = entryId.substr(0, i);
+                    }
                 }
 
-                // Find url of select entry.
+                // Find url of select articles.
                 var urls = document.evaluate(
                     '//a[contains(@id, "' + entryId + '_title")]',
                     entry, null, 7, null);
