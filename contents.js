@@ -11,7 +11,7 @@ if (!opentab) {
                 '//iframe[contains(@id, "quicklookContent")]',
                 document, null, 7, null);
             if (previews.snapshotLength == 1) { // Found full preview
-                var url = preview.snapShotItem(0).src;
+                var url = preview.snapshotItem(0).src;
             } else { // can't find full preview
                 // Find select articles by using the mouse.
                 var entries = document.evaluate(
