@@ -10,8 +10,8 @@
     "content_scripts": [ {
       "js": [ "contents.js" ],
       "matches": [
-        "http://www.feedly.com/home*",
-        "https://www.feedly.com/home*"
+        "http://www.feedly.com/*",
+        "https://www.feedly.com/*"
       ]
     } ],
     "permissions": [
