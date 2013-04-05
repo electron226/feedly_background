@@ -6,7 +6,7 @@ chrome.extension.onMessage.addListener(
         if (request.getkey) {
             var key = localStorage['background_key'];
             if (key == undefined || key == null) {
-                key = "F"; // default key
+                key = "I"; // default key
             }
             sendResponse( key.toUpperCase() );
         }
