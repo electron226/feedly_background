@@ -1,7 +1,7 @@
 ﻿{
     "name": "Feedly will open entry in background tab",
     "description": "Feedly will open entry in background tab.", 
-    "version": "0.3.4",
+    "version": "0.3.5",
     "manifest_version": 2,
     "options_page": "options.html",
     "background" : {
@@ -10,8 +10,8 @@
     "content_scripts": [ {
       "js": [ "contents.js" ],
       "matches": [
-        "http://www.feedly.com/*",
-        "https://www.feedly.com/*"
+        "http://*.feedly.com/*",
+        "https://*.feedly.com/*"
       ]
     } ],
     "permissions": [
