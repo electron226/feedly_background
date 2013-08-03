@@ -1,6 +1,6 @@
 ﻿{
-    "name": "Feedly will open entry in background tab",
-    "description": "Feedly will open entry in background tab.", 
+    "name": "Feedly will open the entry in background tab",
+    "description": "Feedly will the open entry in background tab.", 
     "version": "0.3.5",
     "manifest_version": 2,
     "options_page": "options.html",
