@@ -1,0 +1,38 @@
+{
+  "extName": {
+    "message": "Feedly open the entry in background tab",
+    "description": "This extension name."
+  },
+  "extDescription": {
+    "message": "this extension provides behavior that the entries of feedly will open background tab.",
+    "description": "this extension behavior"
+  },
+  "option": {
+    "message": "options",
+    "description": "option"
+  },
+  "save": {
+    "message": "save",
+    "description": "save"
+  },
+  "load": {
+    "message": "load",
+    "description": "load"
+  },
+  "init": {
+    "message": "init",
+    "description": "initialize"
+  },
+  "import": {
+    "message": "import",
+    "description": "import"
+  },
+  "export": {
+    "message": "export",
+    "description": "export"
+  },
+  "presskey": {
+    "message": "Press key",
+    "description": "the message of the key input."
+  }
+}

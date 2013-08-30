@@ -1,0 +1,38 @@
+﻿{
+  "extName": {
+    "message": "Feedlyの記事をバックグラウンドで開く",
+    "description": "拡張機能名"
+  },
+  "extDescription": {
+    "message": "Feedlyの記事をバックグラウンドで開く操作を追加する。",
+    "description": "拡張機能の機能"
+  },
+  "option": {
+    "message": "オプション",
+    "description": "オプションの文字列"
+  },
+  "save": {
+    "message": "保存",
+    "description": "保存ボタン"
+  },
+  "load": {
+    "message": "読込",
+    "description": "読み込みボタン"
+  },
+  "init": {
+    "message": "初期化",
+    "description": "初期化ボタン"
+  },
+  "import": {
+    "message": "インポート",
+    "description": "インポートボタン"
+  },
+  "export": {
+    "message": "エクスポート",
+    "description": "エクスポートボタン"
+  },
+  "presskey": {
+    "message": "キーを入力してください",
+    "description": "キー入力時のメッセージ"
+  }
+}

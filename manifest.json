@@ -1,20 +1,29 @@
 ﻿{
-    "name": "Feedly will open the entry in background tab",
-    "description": "Feedly will the open entry in background tab.", 
+    "name": "__MSG_extName__",
+    "description": "__MSG_extDescription__",
     "version": "0.3.6",
     "manifest_version": 2,
+    "default_locale": "ja",
     "options_page": "options.html",
     "background" : {
-      "scripts": ["background.js", "feedly.js"]
-    },
-    "content_scripts": [ {
-      "js": [ "contents.js" ],
-      "matches": [
-        "http://*.feedly.com/*",
-        "https://*.feedly.com/*"
+      "scripts": [
+        "public/javascripts/common.js",
+        "public/javascripts/background.js"
       ]
-    } ],
+    },
+    "content_scripts": [
+      {
+        "js": [
+          "public/javascripts/common.js",
+          "public/javascripts/content_scripts/contents.js"
+        ],
+        "matches": [
+          "http://*.feedly.com/*",
+          "https://*.feedly.com/*"
+        ]
+      }
+    ],
     "permissions": [
-      "tabs"
+      "storage"
     ]
 }

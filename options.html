@@ -3,20 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Options</title>
-    <link rel="shortcut icon" href="favicon.ico">
-    <script type="text/javascript" src="options.js"></script>
+    <script type="text/javascript" src="public/javascripts/common.js"></script>
+    <script type="text/javascript" src="public/javascripts/options.js"></script>
 </head>
 <body>
 
-<button id="setkey">Set Key</button>
-<span id="state"></span>
-<div id="error" style="color: red;"></div>
+<header>
+  <h2><span class="extNameText"></span>&nbsp;<span class="optionText"></span></h2>
+</header>
 
-<div style="font-size: 0.85em;">
-    Can use digit and character.<br>
-    Can't use sign and Ctrl, Shift, Alt key.<br>
-    Default key is I.
-</div>
+<article>
+  <section>
+    <button id="setkey">Set Key</button>
+    <input type="text" id="current_key" style="border: 0px; background-color: white;" disabled>
+    <input type="text" name="open_key" style="width: 400px; display: none;" disabled>
+    <div id="state" style="color: green; display: none;"><span class="presskeyText"></span></div>
+  </section>
+
+  <hr>
+  <section>
+    <button id="save"><span class="saveText"></span></button>
+    <button id="load"><span class="loadText"></span></button>
+    <button id="init"><span class="initText"></span></button>
+    <span id="status" style="color: green;"></span>
+  </section>
+
+  <hr>
+  <section>
+      <button id="export"><span class="exportText"></span></button>
+      <button id="import"><span class="importText"></span></button>
+      <span id="config_view_status"></span>
+  </section>
+</article>
+
+<textarea id="config_view" cols="50" rows="5"></textarea>
 
 </body>
 </html>
