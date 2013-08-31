@@ -46,16 +46,17 @@
 
   document.addEventListener("keyup", function(event) {
     chrome.storage.local.get(null, function(items) {
-      // Press key and Open the new tab in background.
+      var entries;
+      var pushKey = keyCheck(event);
+
+      // Open the new tab in background.
       var storageName = 'open_key_text';
       var open_key = items[storageName] || default_values[storageName];
       open_key = JSON.parse(open_key);
-
-      var pushKey = keyCheck(event);
       if (compareObject(pushKey, open_key)) {
         console.log('the entry to open background tab.');
 
-        var entries = document.evaluate(
+        entries = document.evaluate(
           '//*[contains(@class, "selectedEntry")]',
           event.target, null, 7, null);
         var entry = entries.snapshotItem(0);
@@ -80,6 +81,29 @@
 
         if (url) {
           openInTheBackground(url);
+        }
+      }
+
+      // unread entries open at a time.
+      storageName = 'allopen_key_text';
+      var allopen_key = items[storageName] || default_values[storageName];
+      allopen_key = JSON.parse(allopen_key);
+      if (compareObject(pushKey, allopen_key)) {
+        entries = document.evaluate(
+          '//div[@id="feedlyPart"]' +
+          '//a[contains(@class, "title") and contains(@class, "unread")]',
+          document, null, 7, null);
+
+        storageName = 'open_number_number';
+        var open_number = items[storageName] || default_values[storageName];
+        var i, item;
+        for (i = 0; i < open_number && i < entries.snapshotLength; i++) {
+          item = entries.snapshotItem(i);
+          openInTheBackground(item.href);
+          item.click();
+        }
+        if (i > 0) { // last entry closed.
+          item.click();
         }
       }
     });

@@ -154,41 +154,60 @@ function saveValues(document, saveTypes, callback)
   });
 }
 
+function keyInfoUpdate(area)
+{
+  var open_key = area.querySelector('input.keyJSON');
+  var currentKey = area.querySelector('input.current');
+  currentKey.value = generateKeyString(JSON.parse(open_key.value));
+}
+
+function keyBind(area)
+{
+  var open_key = area.querySelector('input.keyJSON');
+  var currentKey = area.querySelector('input.current');
+  currentKey.value = generateKeyString(JSON.parse(open_key.value));
+
+  var key_tick = null;
+  var state = area.getElementsByClassName('state')[0];
+  var setkey = area.querySelector('button.setkey');
+  setkey.addEventListener('click', function() {
+    if (key_tick) {
+      return;
+    }
+
+    state.style.display = 'block';
+
+    var message = state.innerText;
+    var dot = '';
+    key_tick = setInterval(function() {
+      dot = (dot.length < 3) ? dot + '.' : '';
+      state.innerText = message + dot;
+    }, 1000);
+  });
+
+  document.addEventListener('keyup', function(event) {
+    if (!key_tick) {
+      return;
+    }
+
+    clearInterval(key_tick);
+    key_tick = null;
+    state.style.display = 'none';
+
+    var keyInfo = keyCheck(event);
+    open_key.value = JSON.stringify(keyInfo);
+    currentKey.value = generateKeyString(keyInfo);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   initTranslations(document, translation_path, 'Text');
   loadValues(document, default_values); // init
   loadValues(document, null, function() {
-    var open_key = document.querySelector('input[name=open_key]');
-    var currentKey = document.getElementById('current_key');
-    currentKey.value = generateKeyString(JSON.parse(open_key.value));
-
-    var key_tick = null;
-    var state = document.getElementById('state');
-    var setkey = document.getElementById('setkey');
-    setkey.addEventListener('click', function() {
-      state.style.display = 'block';
-
-      var message = state.innerText;
-      var dot = '';
-      key_tick = setInterval(function() {
-        dot = (dot.length < 3) ? dot + '.' : '';
-        state.innerText = message + dot;
-      }, 1000);
-    });
-
-    document.addEventListener('keyup', function(event) {
-      if (!key_tick) {
-        return;
-      }
-
-      clearInterval(key_tick);
-      key_tick = null;
-      state.style.display = 'none';
-
-      var keyInfo = keyCheck(event);
-      open_key.value = JSON.stringify(keyInfo);
-      currentKey.value = generateKeyString(keyInfo);
-    });
+    var open_background = document.getElementById('open_background');
+    keyBind(open_background);
+    var open_at_a_time = document.getElementById('open_at_a_time');
+    keyBind(open_at_a_time);
 
     /* options control */
     var config_view = document.getElementById('config_view');
@@ -198,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var timeoutTime = 1000;
     document.getElementById('save').addEventListener('click', function() {
       config_view.value = '';
-      saveValues(document, ['text', 'checkbox'],
+      saveValues(document, ['text', 'checkbox', 'number'],
           function() {
             status.innerHTML = 'Options Saved.';
             setTimeout(function() {
@@ -209,7 +228,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, false);
     document.getElementById('load').addEventListener('click', function() {
       loadValues(document, null, function() {
-        currentKey.value = generateKeyString(JSON.parse(open_key.value));
+        keyInfoUpdate(open_background);
+        keyInfoUpdate(open_at_a_time);
 
         status.innerHTML = 'Options Loaded.';
         setTimeout(function() {
@@ -219,7 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, false);
     document.getElementById('init').addEventListener('click', function() {
       loadValues(document, default_values, function() {
-        currentKey.value = generateKeyString(JSON.parse(open_key.value));
+        keyInfoUpdate(open_background);
+        keyInfoUpdate(open_at_a_time);
 
         status.innerHTML = 'Options Initialized.';
         setTimeout(function() {

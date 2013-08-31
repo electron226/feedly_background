@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Options</title>
+    <style type="text/css">
+      section {
+        margin-top: 1em;
+      }
+    </style>
     <script type="text/javascript" src="public/javascripts/common.js"></script>
     <script type="text/javascript" src="public/javascripts/options.js"></script>
 </head>
@@ -13,14 +18,27 @@
 </header>
 
 <article>
-  <section>
-    <button id="setkey">Set Key</button>
-    <input type="text" id="current_key" style="border: 0px; background-color: white;" disabled>
-    <input type="text" name="open_key" style="width: 400px; display: none;" disabled>
-    <div id="state" style="color: green; display: none;"><span class="presskeyText"></span></div>
+  <section id="open_background">
+    <div class="open_backgroundText"></div>
+    <button class="setkey">Set Key</button>
+    <input type="text" class="current" style="border: 0px; background-color: white;" disabled>
+    <input type="text" name="open_key" class="keyJSON" style="width: 400px; display: none;" disabled>
+    <div class="state" style="color: green; display: none;"><span class="presskeyText"></span></div>
   </section>
 
-  <section>
+  <section id="open_at_a_time">
+    <div class="open_at_a_timeText"></div>
+    <button class="setkey">Set Key</button>
+    <input type="text" class="current" style="border: 0px; background-color: white;" disabled>
+    <input type="text" name="allopen_key" class="keyJSON" style="width: 400px; display: none;" disabled>
+    <div class="state" style="color: green; display: none;"><span class="presskeyText"></span></div>
+    <div>
+      <span class="open_numberText"></span>
+      <input type="number" name="open_number" min="1">
+    </div>
+  </section>
+
+  <section id="other">
     <input type="checkbox" name="all_background"><span class="all_backgroundText"></span>
   </section>
 

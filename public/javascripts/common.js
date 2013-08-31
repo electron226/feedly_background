@@ -6,6 +6,9 @@ if (!default_values) {
   var default_values = {
     'open_key_text': JSON.stringify(
       { ctrl: false, alt: false, shift: false, meta: false, keyCode: 73 }),
+    'allopen_key_text': JSON.stringify(
+      { ctrl: true, alt: false, shift: false, meta: false, keyCode: 73 }),
+    'open_number_number': 10,
     'all_background_checkbox': false,
   };
 } else {

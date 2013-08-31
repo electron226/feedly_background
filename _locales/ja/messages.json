@@ -35,8 +35,20 @@
     "message": "キーを入力してください",
     "description": "キー入力時のメッセージ"
   },
+  "open_background": {
+    "message": "記事をバックグラウンドで開く",
+    "description": "オプションの項目"
+  },
   "all_background": {
     "message": "全ての記事内のリンクを強制的にバックグラウンドで開く",
+    "description": "オプションの項目"
+  },
+  "open_at_a_time": {
+    "message": "未読記事を一度に開く (Title Only View 限定)",
+    "description": "オプションの項目"
+  },
+  "open_number": {
+    "message": "一度に開くタブ数",
     "description": "オプションの項目"
   }
 }

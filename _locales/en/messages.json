@@ -35,8 +35,20 @@
     "message": "Press key",
     "description": "the message of the key input."
   },
+  "open_background": {
+    "message": "open entry in the background.",
+    "description": "a item of the option page."
+  },
   "all_background": {
     "message": "Force all links in the entries to open in the background.",
     "description": "a item of the option page."
-  }.
+  },
+  "open_at_a_time": {
+    "message": "open unread entries at a time. (Title Only View only)",
+    "description": "a item of the option page."
+  },
+  "open_number": {
+    "message": "The tab number of open tab at a time.",
+    "description": "a item of the option page."
+  }
 }
