@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var timeoutTime = 1000;
     document.getElementById('save').addEventListener('click', function() {
       config_view.value = '';
-      saveValues(document, ['text', 'number'],
+      saveValues(document, ['text', 'checkbox'],
           function() {
             status.innerHTML = 'Options Saved.';
             setTimeout(function() {

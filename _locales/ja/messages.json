@@ -34,5 +34,9 @@
   "presskey": {
     "message": "キーを入力してください",
     "description": "キー入力時のメッセージ"
+  },
+  "all_background": {
+    "message": "全ての記事内のリンクを強制的にバックグラウンドで開く",
+    "description": "オプションの項目"
   }
 }

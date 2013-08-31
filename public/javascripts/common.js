@@ -6,13 +6,15 @@ if (!default_values) {
   var default_values = {
     'open_key_text': JSON.stringify(
       { ctrl: false, alt: false, shift: false, meta: false, keyCode: 73 }),
+    'all_background_checkbox': false,
   };
 } else {
   throw new Error("Can't define the variable of the default_values.");
 }
 
 if (!translation_path) {
-  var translation_path = chrome.runtime.getURL('_locales/ja/messages.json');
+  var translation_path = chrome.runtime.getURL('_locales/ja/messages.json') ||
+                         chrome.runtime.getURL('_locales/en/messages.json');
 } else {
   throw new Error("Can't define the variable of the translation_path.");
 }

@@ -34,5 +34,9 @@
   "presskey": {
     "message": "Press key",
     "description": "the message of the key input."
-  }
+  },
+  "all_background": {
+    "message": "Force all links in the entries to open in the background.",
+    "description": "a item of the option page."
+  }.
 }
