@@ -19,9 +19,18 @@
       a.href = url;
 
       var evt = document.createEvent("MouseEvents");
-      evt.initMouseEvent(
-        "click", true, false, window, 0, 0, 0, 0, 0,
-        true, false, false, false, 0, null);
+      var ua = navigator.userAgent;
+      if (ua.indexOf('Mac') !== -1) {
+        // OS X
+        evt.initMouseEvent(
+          "click", true, false, window, 0, 0, 0, 0, 0,
+          false, false, false, true, 0, null); // use meta key.
+      } else {
+        // Windows or Linux.
+        evt.initMouseEvent(
+          "click", true, false, window, 0, 0, 0, 0, 0,
+          true, false, false, false, 0, null); // use ctrl key.
+      }
       a.dispatchEvent(evt);
     }
   }
