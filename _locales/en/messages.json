@@ -4,7 +4,7 @@
     "description": "This extension name."
   },
   "extDescription": {
-    "message": "this extension provides behavior that the entries of feedly will open background tab.",
+    "message": "This extension provides functions the entry of feedly is opened in the background tab.",
     "description": "this extension behavior"
   },
   "option": {
