@@ -12,27 +12,14 @@
     }
     focus = (focus === void 0) ? false : focus;
 
-    if (focus) {
-      window.open(url);
-    } else {
-      var a = document.createElement('a');
-      a.href = url;
-
-      var evt = document.createEvent("MouseEvents");
-      var ua = navigator.userAgent;
-      if (ua.indexOf('Mac') !== -1) {
-        // OS X
-        evt.initMouseEvent(
-          "click", true, false, window, 0, 0, 0, 0, 0,
-          false, false, false, true, 0, null); // use meta key.
-      } else {
-        // Windows or Linux.
-        evt.initMouseEvent(
-          "click", true, false, window, 0, 0, 0, 0, 0,
-          true, false, false, false, 0, null); // use ctrl key.
-      }
-      a.dispatchEvent(evt);
-    }
+    var message = {};
+    message.event = 'open';
+    message.url = url;
+    message.active = focus;
+    chrome.runtime.sendMessage(message, function(response) {
+      console.assert(
+        response != true, "Extension open the tab at a entry. failed.");
+    });
   }
 
   document.addEventListener('click', function(event) {

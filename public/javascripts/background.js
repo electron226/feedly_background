@@ -1,6 +1,20 @@
 /*jshint globalstrict: true*/
 'use strict';
 
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  switch (message.event) {
+    case 'open': {
+        chrome.tabs.create(
+          { url: message.url, active: message.active }, function() {
+            sendResponse(true);
+          }
+        )
+        break;
+    }
+  }
+  sendResponse(false);
+});
+
 var versionKey = 'version';
 
 /**
