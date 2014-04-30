@@ -15,66 +15,40 @@ function loadValues(document, values, debugCallback)
     items = values || items;
     var element = null;
     for (var key in items) {
+      element = document.evaluate(
+          '//*[@name="' + key + '"]', document, null, 7, null);
+      if (element.snapshotLength === 0) {
+        console.log('loadValues() Get ' + key + ' error.');
+        continue;
+      }
+
       var value = items[key];
-      var elName = key.match(
-          /(^[\w]*)_(text|password|radio|checkbox|number|textarea)$/);
-      if (elName) {
-        switch (elName[2]) {
-          case 'number':
-            element = document.evaluate(
-                '//input[@name="' + elName[1] + '"]',
-                document, null, 7, null);
-            if (element.snapshotLength !== 1) {
-              console.log('loadValues() Get ' + elName[1] + ' error.');
-              continue;
-            }
-            element.snapshotItem(0).value = value;
-            debugList.push(elName[1]);
-            break;
-          case 'radio':
-            element = document.evaluate(
-                '//input[@name="' + elName[1] + '"][@value="' + value + '"]',
-                document, null, 7, null);
-            if (element.snapshotLength !== 1) {
-              console.log('loadValues() Get ' + elName[1] + ' error.');
-              continue;
-            }
-            element.snapshotItem(0).checked = true;
-            debugList.push(elName[1]);
-            break;
-          case 'checkbox':
-            element = document.evaluate(
-                '//input[@name="' + elName[1] + '"]', document, null, 7, null);
-            if (element.snapshotLength !== 1) {
-              console.log('loadValues() Get ' + elName[1] + ' error.');
-              continue;
-            }
-            element.snapshotItem(0).checked = value;
-            debugList.push(elName[1]);
-            break;
-          case 'password':
-          case 'text':
-            element = document.evaluate(
-                '//input[@name="' + elName[1] + '"]', document, null, 7, null);
-            if (element.snapshotLength !== 1) {
-              console.log('loadValues() Get ' + elName[1] + ' error.');
-              continue;
-            }
-            element.snapshotItem(0).value = trim(value);
-            debugList.push(elName[1]);
-            break;
-          case 'textarea':
-            element = document.evaluate(
-                '//textarea[@name="' + elName[1] + '"]',
-                document, null, 7, null);
-            if (element.snapshotLength !== 1) {
-              console.log('loadValues() Get ' + elName[1] + ' error.');
-              continue;
-            }
-            element.snapshotItem(0).value = trim(value);
-            debugList.push(elName[1]);
-            break;
-        }
+      switch (element.snapshotItem(0).type) {
+        case 'radio':
+          element = document.evaluate(
+              '//input[@name="' + key + '"][@value="' + value + '"]',
+              document, null, 7, null);
+          if (element.snapshotLength !== 1) {
+            console.log('loadValues() Get ' + key + ' error.');
+            continue;
+          }
+          element.snapshotItem(0).checked = true;
+          debugList.push(element.snapshotItem(0).name);
+          break;
+        case 'checkbox':
+          element.snapshotItem(0).checked = value;
+          debugList.push(element.snapshotItem(0).name);
+          break;
+        case 'number':
+          element.snapshotItem(0).value = value;
+          debugList.push(element.snapshotItem(0).name);
+          break;
+        case 'password':
+        case 'text':
+        case 'textarea':
+          element.snapshotItem(0).value = trim(value);
+          debugList.push(element.snapshotItem(0).name);
+          break;
       }
     }
 
@@ -89,6 +63,7 @@ function saveValues(document, saveTypes, callback)
   if (document === void 0 || toType(saveTypes) !== 'array') {
     throw new Error('Invalid argument.');
   }
+
   var i, item;
 
   // inputタグの保存するtype
@@ -100,7 +75,6 @@ function saveValues(document, saveTypes, callback)
     }
   }
 
-  var storageName;
   var writeData = {};
   var inputs = document.evaluate(
       '//input[' + types + ']', document, null, 7, null);
@@ -110,21 +84,21 @@ function saveValues(document, saveTypes, callback)
       continue;
     }
 
-    storageName = item.name + '_' + item.type;
     switch (item.type) {
       case 'radio':
         if (item.checked) {
-          writeData[storageName] = item.value;
+          writeData[item.name] = item.value;
         }
         break;
       case 'checkbox':
-        writeData[storageName] = item.checked;
+        writeData[item.name] = item.checked;
         break;
+      case 'password':
       case 'text':
-        writeData[storageName] = trim(item.value);
+        writeData[item.name] = trim(item.value);
         break;
       case 'number':
-        writeData[storageName] = parseInt(item.value, 10);
+        writeData[item.name] = item.value;
         break;
     }
   }
@@ -136,19 +110,18 @@ function saveValues(document, saveTypes, callback)
       continue;
     }
 
-    storageName = item.name + '_' + item.tagName.toLowerCase();
-    writeData[storageName] = trim(item.value);
+    writeData[item.name] = trim(item.value);
   }
 
   // writeData options.
   chrome.storage.local.set(writeData, function() {
-    // writeDatad key catalog
-    var debug = [];
-    for (var key in writeData) {
-      debug.push(key);
-    }
-
     if (toType(callback) === 'function') {
+      // writeDatad key catalog
+      var debug = [];
+      for (var key in writeData) {
+        debug.push(key);
+      }
+
       callback(debug);
     }
   });

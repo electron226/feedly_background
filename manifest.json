@@ -7,23 +7,19 @@
     "options_page": "options.html",
     "background" : {
       "scripts": [
-        "public/javascripts/common.js",
-        "public/javascripts/background.js"
+        "src/common.js",
+        "src/background.js"
       ]
     },
     "content_scripts": [
       {
         "js": [
-          "public/javascripts/common.js",
-          "public/javascripts/content_scripts/contents.js"
+          "src/common.js",
+          "src/content_scripts/contents.js"
         ],
         "matches": [
           "http://*.feedly.com/*",
           "https://*.feedly.com/*"
         ]
       }
-    ],
-    "permissions": [
-      "storage", "tabs"
     ]
-}
