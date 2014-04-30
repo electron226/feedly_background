@@ -3,14 +3,20 @@
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   switch (message.event) {
-    case 'open': {
-        chrome.tabs.create(
-          { url: message.url, active: message.active }, function() {
-            sendResponse(true);
-          }
-        );
-        break;
-    }
+    case 'open':
+      chrome.tabs.create(
+        { url: message.url, active: message.active }, function() {
+          sendResponse(true);
+        }
+      );
+      break;
+    case 'update_feedly_tab':
+      chrome.tabs.query({ url: '*://feedly.com/*'}, function(results) {
+        for (var i in results) {
+          chrome.tabs.reload(results[i].id);
+        }
+      });
+      break;
   }
   sendResponse(false);
 });
@@ -18,8 +24,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 var versionKey = 'version';
 
 /**
-* この拡張機能外のスクリプトを使って行う初期化処理
-*/
+ * この拡張機能外のスクリプトを使って行う初期化処理
+ */
 function init()
 {
   chrome.storage.local.get(null, function(items) {

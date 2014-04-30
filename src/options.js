@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
               status.innerHTML = '';
             }, timeoutTime);
+
+            chrome.runtime.sendMessage({ event: 'update_feedly_tab' });
           }
       );
     }, false);
