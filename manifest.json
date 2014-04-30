@@ -22,4 +22,6 @@
           "https://*.feedly.com/*"
         ]
       }
-    ]
+    ],
+    "permissions": [ "storage" ]
+}

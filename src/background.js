@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
           { url: message.url, active: message.active }, function() {
             sendResponse(true);
           }
-        )
+        );
         break;
     }
   }
