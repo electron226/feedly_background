@@ -7,14 +7,18 @@
     "options_page": "options.html",
     "background" : {
       "scripts": [
+        "src/debug.js",
         "src/common.js",
+        "src/common_func.js",
         "src/background.js"
-      ]
+      ],
+      "persistent": false
     },
     "content_scripts": [
       {
         "js": [
           "src/common.js",
+          "src/common_func.js",
           "src/content_scripts/contents.js"
         ],
         "matches": [

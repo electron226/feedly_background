@@ -5,60 +5,60 @@
     <title>Options</title>
     <style type="text/css">
       section {
-        margin-top: 1em;
+        margin: 16px 0;
       }
     </style>
-    <script type="text/javascript" src="src/common.js"></script>
-    <script type="text/javascript" src="src/options.js"></script>
 </head>
 <body>
 
 <header>
-  <h2><span class="extNameText"></span>&nbsp;<span class="optionText"></span></h2>
+  <h2><span translation="extName"></span>&nbsp;<span translation="option"></span></h2>
 </header>
 
 <article>
-  <section id="open_background">
-    <div class="open_backgroundText"></div>
-    <button class="setkey">Set Key</button>
+  <section id="open_key">
+    <div translation="open_background"></div>
+    <button name="open_key" class="setKey">Set Key</button>
     <input type="text" class="current" style="border: 0px; background-color: white;" disabled>
     <input type="text" name="open_key" class="keyJSON" style="width: 400px; display: none;" disabled>
-    <div class="state" style="color: green; display: none;"><span class="presskeyText"></span></div>
+    <div class="state" style="color: green; display: none;"><span translation="presskey"></span></div>
   </section>
 
-  <section id="open_at_a_time">
-    <div class="open_at_a_timeText"></div>
-    <button class="setkey">Set Key</button>
+  <section id="allopen_key">
+    <div translation="open_at_a_time"></div>
+    <button name="allopen_key" class="setKey">Set Key</button>
     <input type="text" class="current" style="border: 0px; background-color: white;" disabled>
     <input type="text" name="allopen_key" class="keyJSON" style="width: 400px; display: none;" disabled>
-    <div class="state" style="color: green; display: none;"><span class="presskeyText"></span></div>
+    <div class="state" style="color: green; display: none;"><span translation="presskey"></span></div>
     <div>
-      <span class="open_numberText"></span>
-      <input type="number" name="open_number" min="1">
+      <span translation="open_number"></span>
+      <input type="number" name="open_number" min="1" style="width: 50px;">
     </div>
   </section>
 
   <section id="other">
-    <input type="checkbox" name="all_background"><span class="all_backgroundText"></span>
+    <input type="checkbox" name="all_background"><span translation="all_background"></span>
   </section>
 
-  <hr>
   <section>
-    <button id="save"><span class="saveText"></span></button>
-    <button id="load"><span class="loadText"></span></button>
-    <button id="init"><span class="initText"></span></button>
-    <span id="status" style="color: green;"></span>
+    <button id="save" translation="save"></button>
+    <button id="load" translation="load"></button>
+    <button id="init" translation="init"></button>
+    <span id="storageStatus" style="color: green;"></span>
   </section>
 
-  <hr>
   <section>
-      <button id="export"><span class="exportText"></span></button>
-      <button id="import"><span class="importText"></span></button>
-      <span id="config_view_status"></span>
+      <button id="export" translation="export"></button>
+      <button id="import" translation="import"></button>
+      <span id="setValuesStatus" style="color: green;"></span>
   </section>
 </article>
 
-<textarea id="config_view" cols="50" rows="5"></textarea>
+<textarea id="config" cols="50" rows="5"></textarea>
 
+<script type="text/javascript" src="src/debug.js"></script>
+<script type="text/javascript" src="src/common.js"></script>
+<script type="text/javascript" src="src/common_func.js"></script>
+<script type="text/javascript" src="src/options.js"></script>
 </body>
 </html>

@@ -22,11 +22,8 @@
     }
     focus = (focus === void 0) ? false : focus;
 
-    var message = {};
-    message.event = 'open';
-    message.url = url;
-    message.active = focus;
-    chrome.runtime.sendMessage(message, function(response) {
+    chrome.runtime.sendMessage(
+      { event: 'open', url: url, active: focus }, function(response) {
       console.assert(
         response !== true, "Extension open the tab at a entry. failed.");
     });
@@ -50,7 +47,7 @@
     var pushKey = keyCheck(event);
 
     // Open the new tab in background.
-    if (compareObject(pushKey, JSON.parse(myOptions.open_key))) {
+    if (deepCompare(pushKey, JSON.parse(myOptions.open_key))) {
       console.log('the entry to open background tab.');
 
       entries = document.evaluate(
@@ -82,7 +79,7 @@
     }
 
     // unread entries open at a time.
-    if (compareObject(pushKey, JSON.parse(myOptions.allopen_key))) {
+    if (deepCompare(pushKey, JSON.parse(myOptions.allopen_key))) {
       var i, item;
       entries = document.evaluate(
         '//div[@id="feedlyPart"]' +

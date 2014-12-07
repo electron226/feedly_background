@@ -1,249 +1,251 @@
-/*jshint globalstrict: true*/
-'use strict';
+(function(window, document) {
+  "use strict";
 
-function loadValues(document, values, debugCallback)
-{
-  if (document === void 0 ||
-      toType(values) !== 'object' && values !== null || values === void 0) {
-    throw new Error('Arguments type error.');
-  }
+  var myOptions = null;
 
-  // Get All Option Value.
-  chrome.storage.local.get(null, function(items) {
-    var debugList = []; // use Debug
+  function setSettingsToStorage(settings)//{{{
+  {
+    var deferred = Promise.defer();
+    setTimeout(function() {
+      chrome.storage.local.set(settings, function() {
+        if (chrome.runtime.lastError) {
+          error(chrome.runtime.lastError.message);
+          deferred.reject();
+          return;
+        }
+        deferred.resolve();
+      });
+    }, 0);
+    return deferred.promise;
+  }//}}}
 
-    items = values || items;
-    var element = null;
-    for (var key in items) {
-      element = document.evaluate(
-          '//*[@name="' + key + '"]', document, null, 7, null);
-      if (element.snapshotLength === 0) {
-        console.log('loadValues() Get ' + key + ' error.');
-        continue;
-      }
+  function getSettingsFromStorage()//{{{
+  {
+    var deferred = Promise.defer();
+    setTimeout(function() {
+      chrome.storage.local.get(null, function(items) {
+        if (chrome.runtime.lastError) {
+          error(chrome.runtime.lastError.message);
+          deferred.reject();
+          return;
+        }
+        deferred.resolve(items);
+      });
+    }, 0);
+    return deferred.promise;
+  }//}}}
 
-      var value = items[key];
-      switch (element.snapshotItem(0).type) {
-        case 'radio':
-          element = document.evaluate(
-              '//input[@name="' + key + '"][@value="' + value + '"]',
-              document, null, 7, null);
-          if (element.snapshotLength !== 1) {
-            console.log('loadValues() Get ' + key + ' error.');
-            continue;
-          }
-          element.snapshotItem(0).checked = true;
-          debugList.push(element.snapshotItem(0).name);
-          break;
-        case 'checkbox':
-          element.snapshotItem(0).checked = value;
-          debugList.push(element.snapshotItem(0).name);
-          break;
-        case 'number':
-          element.snapshotItem(0).value = value;
-          debugList.push(element.snapshotItem(0).name);
-          break;
-        case 'password':
-        case 'text':
-        case 'textarea':
-          element.snapshotItem(0).value = trim(value);
-          debugList.push(element.snapshotItem(0).name);
-          break;
-      }
+  function showStatusMessage(targetId, message, showTime)//{{{
+  {
+    if (showTime === void 0 || showTime === null) {
+      showTime = 1000;
     }
 
-    if (toType(debugCallback) === 'function') {
-      debugCallback(debugList);
+    var deferred = Promise.defer();
+    setTimeout(function() {
+      var t = document.getElementById(targetId);
+      t.textContent = message;
+      setTimeout(function() {
+        t.textContent = '';
+      }, showTime);
+
+      deferred.resolve();
+    }, 0);
+    return deferred.promise;
+  }//}}}
+
+  function setDefaultOptions(config)//{{{
+  {
+    var values = {};
+    for (var key in default_values) {
+      if (default_values.hasOwnProperty(key)) {
+        values[key] = (config.hasOwnProperty(key)) ?
+                        config[key] : default_values[key];
+      }
+    }
+    return values;
+  }//}}}
+
+  function loadOptions()//{{{
+  {
+    return new Promise(function(resolve, reject) {
+      getSettingsFromStorage().then(initOptions).then(resolve, reject);
+    });
+  }//}}}
+
+  function initOptions(options)//{{{
+  {
+    var deferred = Promise.defer();
+
+    myOptions = setDefaultOptions(options || default_values);
+    setOptions(myOptions)
+    .then(function() {
+      return showStatusMessage('storageStatus', 'Initialized.');
+    }).then(deferred.resolve, deferred.reject);
+
+    return deferred.promise;
+  }//}}}
+
+  function setKeyInfo(targetKey, keyObj, setOption)//{{{
+  {
+    var keyString = generateKeyString(keyObj);
+
+    var el = document.evaluate(
+      '//*[@id="' + targetKey + '"]', document, null, 7, null);
+    var current = document.evaluate(
+      'child::input[@class="current"]', el.snapshotItem(0), null, 7, null);
+    var keyJSON = document.evaluate(
+      'child::input[@class="keyJSON"]', el.snapshotItem(0), null, 7, null);
+    current.snapshotItem(0).value = trim(keyString);
+    var json = JSON.stringify(keyObj);
+    keyJSON.snapshotItem(0).value = trim(json);
+    if (setOption) {
+      myOptions[targetKey] = json;
+    }
+  }//}}}
+
+  var targetKey = null;
+  document.addEventListener('keyup', function(e) {
+    if (targetKey) {
+      var keyValues = keyCheck(e);
+      setKeyInfo(targetKey, keyValues, true);
+      targetKey = null;
     }
   });
-}
 
-function saveValues(document, saveTypes, callback)
-{
-  if (document === void 0 || toType(saveTypes) !== 'array') {
-    throw new Error('Invalid argument.');
-  }
+  function setButtonEvent()//{{{
+  {
+    function onClicked(e)//{{{
+    {
+      var config;
 
-  var i, item;
+      switch (e.target.id) {
+      case 'save':
+        setSettingsToStorage(myOptions)
+        .then(function() {
+          return showStatusMessage('storageStatus', 'Saved.');
+        });
+        break;
+      case 'load':
+        loadOptions();
+        break;
+      case 'init':
+        initOptions(default_values);
+        break;
+      case 'export':
+        config = document.getElementById('config');
+        config.value = JSON.stringify(myOptions, null, '   ');
+        showStatusMessage('setValuesStatus', 'Exported.');
+        break;
+      case 'import':
+        config = document.getElementById('config');
+        myOptions = JSON.parse(trim(config.value));
+        setOptions(myOptions)
+        .then(function() {
+          return showStatusMessage('setValuesStatus', 'Imported.');
+        });
+        break;
+      }
 
-  // inputタグの保存するtype
-  var types = '';
-  for (i = 0; i < saveTypes.length; i++) {
-    types += '@type="' + saveTypes[i] + '"';
-    if (i + 1 < saveTypes.length) {
-      types += ' or ';
-    }
-  }
+      switch (e.target.className) {
+      case 'setKey':
+        targetKey = e.target.getAttribute('name');
+        break;
+      }
+    }//}}}
 
-  var writeData = {};
-  var inputs = document.evaluate(
-      '//input[' + types + ']', document, null, 7, null);
-  for (i = 0; i < inputs.snapshotLength; i++) {
-    item = inputs.snapshotItem(i);
-    if (item.name.length === 0) {
-      continue;
-    }
+    var deferred = Promise.defer();
+    setTimeout(function() {
+      var item;
+      var els = document.evaluate('//button', document, null, 7, null);
+      for (var i = 0, len = els.snapshotLength; i < len; i++) {
+        item = els.snapshotItem(i);
+        item.onclick = onClicked;
+      }
+    }, 0);
+    return deferred.promise;
+  }//}}}
 
-    switch (item.type) {
+  function setOptionElementsEvent()//{{{
+  {
+    function onChanged(e) {//{{{
+      switch (e.target.type) {
+      case 'number':
+        myOptions[e.target.name] = parseInt(e.target.value, 10);
+        break;
       case 'radio':
-        if (item.checked) {
-          writeData[item.name] = item.value;
-        }
+        myOptions[e.target.name] = e.target.value;
         break;
       case 'checkbox':
-        writeData[item.name] = item.checked;
+        myOptions[e.target.name] = e.target.checked;
         break;
-      case 'password':
       case 'text':
-        writeData[item.name] = trim(item.value);
+      case 'textarea':
+        myOptions[e.target.name] = trim(e.target.value);
         break;
-      case 'number':
-        writeData[item.name] = item.value;
-        break;
-    }
-  }
-
-  var textareas = document.evaluate('//textarea', document, null, 7, null);
-  for (i = 0; i < textareas.snapshotLength; i++) {
-    item = textareas.snapshotItem(i);
-    if (item.name.length === 0) {
-      continue;
-    }
-
-    writeData[item.name] = trim(item.value);
-  }
-
-  // writeData options.
-  chrome.storage.local.set(writeData, function() {
-    if (toType(callback) === 'function') {
-      // writeDatad key catalog
-      var debug = [];
-      for (var key in writeData) {
-        debug.push(key);
       }
+    }//}}}
 
-      callback(debug);
-    }
-  });
-}
+    var deferred = Promise.defer();
+    setTimeout(function() {
+      var item;
+      var els = document.evaluate(
+        '//input|//textarea', document, null, 7, null);
+      for (var i = 0, len = els.snapshotLength; i < len; i++) {
+        item = els.snapshotItem(i);
+        item.onchange = onChanged;
+      }
+      deferred.resolve();
+    }, 0);
+    return deferred.promise;
+  } //}}}
 
-function keyInfoUpdate(area)
-{
-  var open_key = area.querySelector('input.keyJSON');
-  var currentKey = area.querySelector('input.current');
-  currentKey.value = generateKeyString(JSON.parse(open_key.value));
-}
+  function setOptions(settings)//{{{
+  {
+    var deferred = Promise.defer();
+    setTimeout(function() {
+      var item;
+      var els = document.evaluate(
+        '//input|//textarea', document, null, 7, null);
+      for (var i = 0, len = els.snapshotLength; i < len; i++) {
+        item = els.snapshotItem(i);
+        if (!settings.hasOwnProperty(item.name)) {
+          continue;
+        }
 
-function keyBind(area)
-{
-  var open_key = area.querySelector('input.keyJSON');
-  var currentKey = area.querySelector('input.current');
-  currentKey.value = generateKeyString(JSON.parse(open_key.value));
-
-  var key_tick = null;
-  var state = area.getElementsByClassName('state')[0];
-  var setkey = area.querySelector('button.setkey');
-  setkey.addEventListener('click', function() {
-    if (key_tick) {
-      return;
-    }
-
-    state.style.display = 'block';
-
-    var message = state.innerText;
-    var dot = '';
-    key_tick = setInterval(function() {
-      dot = (dot.length < 3) ? dot + '.' : '';
-      state.innerText = message + dot;
-    }, 1000);
-  });
-
-  document.addEventListener('keyup', function(event) {
-    if (!key_tick) {
-      return;
-    }
-
-    clearInterval(key_tick);
-    key_tick = null;
-    state.style.display = 'none';
-
-    var keyInfo = keyCheck(event);
-    open_key.value = JSON.stringify(keyInfo);
-    currentKey.value = generateKeyString(keyInfo);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  initTranslations(document, translation_path, 'Text');
-  loadValues(document, default_values); // init
-  loadValues(document, null, function() {
-    var open_background = document.getElementById('open_background');
-    keyBind(open_background);
-    var open_at_a_time = document.getElementById('open_at_a_time');
-    keyBind(open_at_a_time);
-
-    /* options control */
-    var config_view = document.getElementById('config_view');
-    var config_view_status = document.getElementById('config_view_status');
-
-    var status = document.getElementById('status');
-    var timeoutTime = 1000;
-    document.getElementById('save').addEventListener('click', function() {
-      config_view.value = '';
-      saveValues(document, ['text', 'checkbox', 'number'],
-          function() {
-            status.innerHTML = 'Options Saved.';
-            setTimeout(function() {
-              status.innerHTML = '';
-            }, timeoutTime);
-
-            chrome.runtime.sendMessage({ event: 'update_feedly_tab' });
+        switch (item.type) {
+        case 'text':
+          // key info only.
+          setKeyInfo(item.name, JSON.parse(settings[item.name]), false);
+          break;
+        case 'number':
+          item.value = settings[item.name];
+          break;
+        case 'radio':
+          if (item.value === settings[item.name]) {
+            item.checked = true;
           }
-      );
-    }, false);
-    document.getElementById('load').addEventListener('click', function() {
-      loadValues(document, null, function() {
-        keyInfoUpdate(open_background);
-        keyInfoUpdate(open_at_a_time);
-
-        status.innerHTML = 'Options Loaded.';
-        setTimeout(function() {
-          status.innerHTML = '';
-        }, timeoutTime);
-      });
-    }, false);
-    document.getElementById('init').addEventListener('click', function() {
-      loadValues(document, default_values, function() {
-        keyInfoUpdate(open_background);
-        keyInfoUpdate(open_at_a_time);
-
-        status.innerHTML = 'Options Initialized.';
-        setTimeout(function() {
-          status.innerHTML = '';
-        }, timeoutTime);
-      });
-    }, false);
-
-    // Import and Export
-    document.getElementById('export').addEventListener('click', function() {
-      chrome.storage.local.get(null, function(items) {
-        config_view.value = JSON.stringify(items);
-      });
-    }, false);
-    document.getElementById('import').addEventListener('click', function() {
-      try {
-        var items = JSON.parse(config_view.value);
-        loadValues(document, items, function() {
-          config_view_status.textContent = 'Success. Please, save.';
-          config_view_status.style.color = 'green';
-          setTimeout(function() {
-            config_view_status.innerHTML = '';
-          }, 1000);
-        });
-      } catch (error) {
-        config_view_status.textContent = 'Import error. invalid string.';
-        config_view_status.style.color = 'red';
+          break;
+        case 'checkbox':
+          item.checked = settings[item.name];
+          break;
+        case 'textarea':
+          item.value = settings[item.name];
+          break;
+        }
       }
-    }, false);
-  });
-});
+      deferred.resolve();
+    }, 0);
+    return deferred.promise;
+  }//}}}
+
+  document.addEventListener('DOMContentLoaded', function() {//{{{
+    getFile(translation_path)
+    .then(function(response) {
+      return setTranslations(document, JSON.parse(response));
+    })
+    .then(loadOptions)
+    .then(setOptionElementsEvent)
+    .then(setButtonEvent);
+  });//}}}
+})(window, document);
