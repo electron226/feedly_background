@@ -1,0 +1,10 @@
+{
+  "libs": [
+    "browser",
+    "ecma5"
+  ],
+  "loadEagerly": [
+  ],
+  "plugins": {
+  }
+}
