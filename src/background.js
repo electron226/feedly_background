@@ -1,25 +1,19 @@
 (function() {
   'use strict';
 
-  chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    debug('runtime.onMessage', message);
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.event) {
-    case 'open':
-      chrome.tabs.create(
-        { url: message.url, active: message.active }, function() {
+      case "open":
+        chrome.tabs.create(message.options, () => {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+            sendResponse(false);
+            return;
+          }
           sendResponse(true);
-        }
-      );
-      break;
-    case 'update_feedly_tab':
-      chrome.tabs.query({ url: '*://feedly.com/*'}, function(results) {
-        for (var i in results) {
-          chrome.tabs.reload(results[i].id);
-        }
-      });
-      break;
+        });
+        break;
     }
-    sendResponse(false);
   });
 
   /**
