@@ -6,30 +6,27 @@
   "use strict";
 
   window.getFile = window.getFile || function(path) { // {{{
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise((resolve, reject) => {
       var req = new XMLHttpRequest();
       req.open('GET', path);
       req.onreadystatechange = function() {
         if (req.readyState === 4) {
           if (req.status === 200) {
-            deferred.resolve(req.responseText);
+            resolve(req.responseText);
           } else {
             error("Don't get file.", path);
-            deferred.reject();
+            reject();
           }
         }
       };
       req.send();
-    }, 0);
-    return deferred.promise;
+    });
   };
   // }}}
 
   window.setTranslations =//{{{
     window.setTranslations || function(doc, translationObject) {
-      var deferred = Promise.defer();
-      setTimeout(function() {
+      return new Promise((resolve, reject) => {
         var els = document.evaluate('//*[@translation]', doc, null, 7, null);
         var item, name;
         for (var i = 0, len = els.snapshotLength; i < len; i++) {
@@ -39,9 +36,8 @@
             item.textContent = chrome.i18n.getMessage(name);
           }
         }
-        deferred.resolve();
-      }, 0);
-      return deferred.promise;
+        resolve();
+      });
   };//}}}
 
   window.cloneObject = window.cloneObject || function(obj) {//{{{

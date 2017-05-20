@@ -10,11 +10,12 @@
     'open_number': 10,
     'all_background': false
   };
-  window.versionKey = window.versionKey || 'version';
+  window.versionKey                = window.versionKey || 'version';
   defaultValues[window.versionKey] = '1.0.0';
-  window.default_values = window.default_values || defaultValues;
+  window.default_values            = window.default_values || defaultValues;
 
-  window.optionPage = window.optionPage || chrome.runtime.getURL('options.html');
+  window.optionPage = window.optionPage ||
+                      chrome.runtime.getURL('options.html');
 
   window.translation_path = window.translation_path ||
                          chrome.runtime.getURL('_locales/ja/messages.json') ||

@@ -4,10 +4,10 @@
 
   console.log('Feedly open the entry in background tab keybind started.');
 
-  var myOptions = null;
+  let myOptions = null;
   chrome.storage.local.get(null, function(items) {
     myOptions = items;
-    for (var key in default_values) {
+    for (let key in default_values) {
       if (!myOptions.hasOwnProperty(key)) {
         myOptions[key] = default_values[key];
       }
@@ -16,22 +16,26 @@
 
   function openInTheBackground(url, focus)
   {
-    if (toType(url) !== 'string' ||
-      toType(focus) !== 'boolean' && focus !== void 0) {
-      throw new Error('Invalid type of arguments.');
-    }
-    focus = (focus === void 0) ? false : focus;
+    console.assert(toType(url) === "string", "not string.");
 
-    chrome.runtime.sendMessage(
-      { event: 'open', url: url, active: focus }, function(response) {
-      console.assert(
-        response !== true, "Extension open the tab at a entry. failed.");
+    let active = (toType(focus) === "boolean") ? focus : false;
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({
+          event: "open",
+          options: { url: url, active: active }
+      }, response => {
+        if (response) {
+          resolve();
+        } else {
+          reject("doesn't create tab.");
+        }
+      });
     });
   }
 
   document.addEventListener('click', function(event) {
     if (event.button === 0) { // clicked left button of mouse.
-      var element = event.target;
+      let element = event.target;
       if (element.tagName === 'A') {
         // stopped event bubbles.
         event.preventDefault();
@@ -43,52 +47,31 @@
   }, false);
 
   document.addEventListener("keyup", function(event) {
-    var entries;
-    var pushKey = keyCheck(event);
+    let pushKey = keyCheck(event);
 
     // Open the new tab in background.
     if (deepCompare(pushKey, JSON.parse(myOptions.open_key))) {
       console.log('the entry to open background tab.');
 
-      entries = document.evaluate(
-        '//*[contains(@class, "selectedEntry")]',
-        event.target, null, 7, null);
-      var entry = entries.snapshotItem(0);
-      var entryId = entry.id;
-
-      // do you showed mini preview?
-      var index = entryId.lastIndexOf('_abstract');
-      if (index !== -1) {
-        // yes
-        entryId = entryId.slice(0, index);
-      }
-
-      // Find url of select articles.
-      var urls = document.evaluate(
-        '//a[contains(@id, "' + entryId + '_title")]',
-        entry, null, 7, null);
-      if (urls.snapshotLength !== 1) {
-        return;
-      }
-
-      var url = urls.snapshotItem(0).href;
+      let entry = document.querySelector(".list-entries .entry.selected");
+      let url   = entry.getAttribute("data-alternate-link");
 
       if (url) {
         openInTheBackground(url);
       }
     }
 
+    // If the entry is opened, open the new tab in background.
+
     // unread entries open at a time.
     if (deepCompare(pushKey, JSON.parse(myOptions.allopen_key))) {
-      var i, item;
-      entries = document.evaluate(
-        '//div[@id="feedlyPart"]' +
-        '//a[contains(@class, "title") and contains(@class, "unread")]',
-        document, null, 7, null);
+      let i, item;
+
+      let entries = document.querySelectorAll(".list-entries .entry.unread");
       for (i = 0; i < parseInt(myOptions.open_number, 10) &&
-        i < entries.snapshotLength; i++) {
-        item = entries.snapshotItem(i);
-        openInTheBackground(item.href);
+        i < entries.length; i++) {
+        item = entries[i];
+        openInTheBackground(item.getAttribute("data-alternate-link"));
         item.className = item.className.replace("unread", "read");
       }
     }

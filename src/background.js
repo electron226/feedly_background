@@ -22,7 +22,7 @@
   function onInstall() {
     debug('Extension Installed.');
 
-    return new Promise(function(resolve) {
+    return new Promise(resolve => {
       // インストール時にオプションページを表示
       chrome.tabs.create({ url: optionPage }, resolve);
     });
@@ -53,61 +53,62 @@
   {
     debug('versionCheckUpdate');
 
-    var deferred = Promise.defer();
-    var currVersion = getVersion();
-    chrome.storage.local.get(versionKey, function(storages) {
-      function update()
-      {
-        return new Promise(function(resolve) {
-          var write = {};
-          write[versionKey] = currVersion;
-          chrome.storage.local.set(write, resolve);
-        });
-      }
+    return new Promise((resolve, reject) => {
+      var currVersion = getVersion();
 
-      if (chrome.runtime.lastError) {
-        error(chrome.runtime.lastError.message);
-        deferred.reject();
-        return;
-      }
-
-      // ver chrome.storage.
-      var prevVersion = storages[versionKey];
-      if (currVersion !== prevVersion) {
-        // この拡張機能でインストールしたかどうか
-        if (prevVersion === void 0) {
-          onInstall().then(update).then(deferred.resolve, deferred.reject);
-        } else {
-          onUpdate().then(update).then(deferred.resolve, deferred.reject);
+      chrome.storage.local.get(versionKey, function(storages) {
+        function update()
+        {
+          return new Promise(function(resolve) {
+            var write = {};
+            write[versionKey] = currVersion;
+            chrome.storage.local.set(write, resolve);
+          });
         }
-      } else {
-        deferred.resolve();
-      }
+
+        if (chrome.runtime.lastError) {
+          error(chrome.runtime.lastError.message);
+          reject();
+          return;
+        }
+
+        // ver chrome.storage.
+        var prevVersion = storages[versionKey];
+        if (currVersion !== prevVersion) {
+          // この拡張機能でインストールしたかどうか
+          if (prevVersion === void 0) {
+            onInstall().then(update).then(resolve, reject);
+          } else {
+            onUpdate().then(update).then(resolve, reject);
+          }
+        } else {
+          resolve();
+        }
+      });
     });
-    return deferred.promise;
   }
 
   function deleteInvalidOptions()
   {
-    var deferred = Promise.defer();
-    chrome.storage.local.get(null, function(items) {
-      // All remove invalid options.
-      var removeKeys = [];
-      for (var key in items) {
-        if (!default_values.hasOwnProperty(key)) {
-          removeKeys.push(key);
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get(null, function(items) {
+        // All remove invalid options.
+        var removeKeys = [];
+        for (var key in items) {
+          if (!default_values.hasOwnProperty(key)) {
+            removeKeys.push(key);
+          }
         }
-      }
-      chrome.storage.local.remove(removeKeys, function() {
-        if (chrome.runtime.lastError) {
-          error(chrome.runtime.lastError.message);
-          deferred.reject();
-          return;
-        }
-        deferred.resolve();
+        chrome.storage.local.remove(removeKeys, function() {
+          if (chrome.runtime.lastError) {
+            error(chrome.runtime.lastError.message);
+            reject();
+            return;
+          }
+          resolve();
+        });
       });
     });
-    return deferred.promise;
   }
 
   function initialize()

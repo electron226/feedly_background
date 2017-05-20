@@ -5,34 +5,30 @@
 
   function setSettingsToStorage(settings)//{{{
   {
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise((resolve, reject) => {
       chrome.storage.local.set(settings, function() {
         if (chrome.runtime.lastError) {
           error(chrome.runtime.lastError.message);
-          deferred.reject();
+          reject();
           return;
         }
-        deferred.resolve();
+        resolve();
       });
-    }, 0);
-    return deferred.promise;
+    });
   }//}}}
 
   function getSettingsFromStorage()//{{{
   {
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise((resolve, reject) => {
       chrome.storage.local.get(null, function(items) {
         if (chrome.runtime.lastError) {
           error(chrome.runtime.lastError.message);
-          deferred.reject();
+          reject();
           return;
         }
-        deferred.resolve(items);
+        resolve(items);
       });
-    }, 0);
-    return deferred.promise;
+    });
   }//}}}
 
   function showStatusMessage(targetId, message, showTime)//{{{
@@ -41,17 +37,16 @@
       showTime = 1000;
     }
 
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise(resolve => {
       var t = document.getElementById(targetId);
+
       t.textContent = message;
       setTimeout(function() {
         t.textContent = '';
       }, showTime);
 
-      deferred.resolve();
-    }, 0);
-    return deferred.promise;
+      resolve();
+    });
   }//}}}
 
   function setDefaultOptions(config)//{{{
@@ -75,15 +70,13 @@
 
   function initOptions(options)//{{{
   {
-    var deferred = Promise.defer();
-
-    myOptions = setDefaultOptions(options || default_values);
-    setOptions(myOptions)
-    .then(function() {
-      return showStatusMessage('storageStatus', 'Initialized.');
-    }).then(deferred.resolve, deferred.reject);
-
-    return deferred.promise;
+    return new Promise((resolve, reject) => {
+      myOptions = setDefaultOptions(options || default_values);
+      setOptions(myOptions)
+      .then(function() {
+        return showStatusMessage('storageStatus', 'Initialized.');
+      }).then(resolve, reject);
+    }, 0);
   }//}}}
 
   function setKeyInfo(targetKey, keyObj, setOption)//{{{
@@ -154,8 +147,7 @@
       }
     }//}}}
 
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise((resolve, reject) => {
       var item;
       var els = document.evaluate('//button', document, null, 7, null);
       for (var i = 0, len = els.snapshotLength; i < len; i++) {
@@ -163,7 +155,6 @@
         item.onclick = onClicked;
       }
     }, 0);
-    return deferred.promise;
   }//}}}
 
   function setOptionElementsEvent()//{{{
@@ -186,8 +177,7 @@
       }
     }//}}}
 
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise((resolve, reject) => {
       var item;
       var els = document.evaluate(
         '//input|//textarea', document, null, 7, null);
@@ -195,15 +185,13 @@
         item = els.snapshotItem(i);
         item.onchange = onChanged;
       }
-      deferred.resolve();
+      resolve();
     }, 0);
-    return deferred.promise;
   } //}}}
 
   function setOptions(settings)//{{{
   {
-    var deferred = Promise.defer();
-    setTimeout(function() {
+    return new Promise((resolve, reject) => {
       var item;
       var els = document.evaluate(
         '//input|//textarea', document, null, 7, null);
@@ -234,9 +222,8 @@
           break;
         }
       }
-      deferred.resolve();
+      resolve();
     }, 0);
-    return deferred.promise;
   }//}}}
 
   document.addEventListener('DOMContentLoaded', function() {//{{{
